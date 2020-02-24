@@ -51,13 +51,26 @@ public class CondominioController {
 		
 	}
 	
+//	@GetMapping(value = "/condominios/{id_condominio}/unidades")
+//    public ResponseEntity<Set<Unidade>> getUnidade_Condominio(@PathVariable("id_condominio") Long id) {
+//        Optional<Condominio> optionalCondominio = this.condominioService.getById(id);
+//        Condominio condominio = optionalCondominio.get();
+//        if (!optionalCondominio.isPresent()) {
+//            return ResponseEntity.notFound().build();
+//        } else {
+//            return ResponseEntity.ok(condominio.getUnidadesCondominio());
+//        }
+//
+//    }
+	
 	@ResponseStatus(code = HttpStatus.FOUND)
 	@GetMapping("/condominios/{id}")
-		public ResponseEntity<Condominio> get(@PathVariable Long id){
+		public ResponseEntity<Condominio> get(@PathVariable ("id") Long id){
 		Condominio condominio = this.condominioService.getById(id).get();
-		
-	
 		return ResponseEntity.ok(condominio);
+//		Optional<Condominio> optionalCondominio = this.condominioService.getById(id);
+//        return optionalCondominio.map(response -> ResponseEntity.ok().body(response))
+//                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 		}
 
 	@ResponseStatus(code = HttpStatus.OK)

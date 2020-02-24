@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import br.com.acme.condominio.Condominio;
 import lombok.EqualsAndHashCode;
@@ -40,19 +41,20 @@ public class Multa implements Serializable {
 	private LocalDate dataMulta;
 	
 	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "condominio_id")
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "condominio_id", nullable = false)
+	@JsonIgnore
 	private Condominio condominioMulta;
 	
 	private BigDecimal valorMulta;
 
-	public Multa(Long id, String descricaoMulta, LocalDate dataMulta, Condominio condominioMulta,
+	public Multa(String descricaoMulta, LocalDate dataMulta,
 			BigDecimal valorMulta) {
 		super();
-		this.id = id;
+		
 		this.descricaoMulta = descricaoMulta;
 		this.dataMulta = dataMulta;
-		this.condominioMulta = condominioMulta;
+
 		this.valorMulta = valorMulta;
 	}
 	

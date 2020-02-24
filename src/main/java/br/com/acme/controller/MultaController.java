@@ -3,6 +3,8 @@ package br.com.acme.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.acme.exception.NotFoundException;
 import br.com.acme.multas.Multa;
+import br.com.acme.service.CondominioService;
 import br.com.acme.service.MultaService;
 
 @RestController
@@ -26,20 +30,26 @@ public class MultaController {
 	@Autowired
 	private MultaService multaService;
 	
+	@Autowired
+	private CondominioService condominioService;
 
 
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/multas")
-	public ResponseEntity<Multa> cadastrar(@RequestBody Multa multa) {
-		this.multaService.save(multa);
+	@PostMapping("/condominios/{id_condominio}/multas")
+	public ResponseEntity<Multa> cadastrar(@PathVariable ("id_condominio") Long id, @Valid @RequestBody Multa multa) {
+		return this.condominioService.getById(id).map(condominio -> {
+            multa.setCondominioMulta(condominio);
+            multaService.save(multa);
+            return ResponseEntity.ok(multa);
+        }).orElseThrow(() -> new NotFoundException("Erro ao salvar Unidade"));
 		
-		return new ResponseEntity<Multa>(multa, HttpStatus.CREATED);
+		
 	}
 	
 	
 
 	@GetMapping("/multas")
-	public List<Multa>listaMultas() {
+	public List<Multa>listMulta() {
 		 return this.multaService.listaMultas();
 		
 		
@@ -77,7 +87,6 @@ public class MultaController {
 		               record.setDescricaoMulta(multa.getDescricaoMulta());
 		               record.setDataMulta(multa.getDataMulta());
 		               record.setValorMulta(multa.getValorMulta());
-		               record.setCondominioMulta(multa.getCondominioMulta());
 		               Multa updated = multaService.save(record);
 		               return ResponseEntity.ok().body(updated);
 		           }).orElse(ResponseEntity.notFound().build());
@@ -86,4 +95,3 @@ public class MultaController {
 		
 	
 }
-

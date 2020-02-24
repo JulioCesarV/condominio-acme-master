@@ -4,12 +4,15 @@ package br.com.acme.aviso;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import br.com.acme.condominio.Condominio;
 import lombok.EqualsAndHashCode;
@@ -31,15 +34,16 @@ public class Aviso implements Serializable {
 	
 	private String descricaoAviso;
 	
-	@ManyToOne
-	@JoinColumn(name = "condominio_id")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "condominio_id", nullable = false)
+	@JsonIgnore
 	private Condominio condominioAviso;
 
-	public Aviso(Long id, String descricaoAviso, Condominio condominioAviso) {
+	public Aviso(String descricaoAviso) {
 		super();
-		this.id = id;
+		
 		this.descricaoAviso = descricaoAviso;
-		this.condominioAviso = condominioAviso;
+		
 	}
 	
 	public Aviso() {

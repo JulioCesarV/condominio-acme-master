@@ -42,10 +42,10 @@ public class Condominio implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "condominioMulta", fetch = FetchType.LAZY)
 	private Set<Multa> multasAplicadas;
 	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "condominioAviso")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "condominioAviso", fetch = FetchType.LAZY)
 	private Set<Aviso> avisosEnviados;
 	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "condominioUnidade")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "condominioUnidade", fetch = FetchType.LAZY)
 	private Set<Unidade> unidadesCondominio;
 
 	
@@ -56,16 +56,11 @@ public class Condominio implements Serializable {
 
 
 
-	public Condominio(Long id, String nome, String email, String telefone, Set<Multa> multasAplicadas,
-			Set<Aviso> avisosEnviados, Set<Unidade> unidadesCondominio) {
+	public Condominio(String nome, String email, String telefone) {
 		super();
-		this.id = id;
 		this.nome = nome;
 		this.email = email;
 		this.telefone = telefone;
-		this.multasAplicadas = multasAplicadas;
-		this.avisosEnviados = avisosEnviados;
-		this.unidadesCondominio = unidadesCondominio;
 	}
 	
 	

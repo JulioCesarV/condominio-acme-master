@@ -3,6 +3,8 @@ package br.com.acme.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.acme.exception.NotFoundException;
+import br.com.acme.service.CondominioService;
 import br.com.acme.service.UnidadeService;
 import br.com.acme.unidade.Unidade;
 
@@ -25,14 +29,21 @@ public class UnidadeController {
 
 	@Autowired
 	private UnidadeService unidadeService;
+	
+	@Autowired
+	private CondominioService condominioService;
 
 
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/unidades")
-	public ResponseEntity<Unidade> cadastrar(@RequestBody Unidade unidade) {
-		this.unidadeService.save(unidade);
+	@PostMapping("/condominios/{id_condominio}/unidades")
+	public ResponseEntity<Unidade> cadastrar(@PathVariable ("id_condominio") Long id, @Valid @RequestBody Unidade unidade) {
+		return this.condominioService.getById(id).map(condominio -> {
+            unidade.setCondominioUnidade(condominio);
+            unidadeService.save(unidade);
+            return ResponseEntity.ok(unidade);
+        }).orElseThrow(() -> new NotFoundException("Erro ao salvar Unidade"));
 		
-		return new ResponseEntity<Unidade>(unidade, HttpStatus.CREATED);
+		
 	}
 	
 	
@@ -75,7 +86,6 @@ public class UnidadeController {
 		           .map(record -> {
 		               record.setNumeroUnidade(unidade.getNumeroUnidade());
 		               record.setBlocoUnidade(unidade.getBlocoUnidade());
-		               record.setCondominioUnidade(unidade.getCondominioUnidade());
 		               Unidade updated = unidadeService.save(record);
 		               return ResponseEntity.ok().body(updated);
 		           }).orElse(ResponseEntity.notFound().build());

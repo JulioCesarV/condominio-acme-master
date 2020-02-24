@@ -3,6 +3,8 @@ package br.com.acme.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,24 +19,31 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.acme.aviso.Aviso;
+import br.com.acme.exception.NotFoundException;
 import br.com.acme.service.AvisoService;
+import br.com.acme.service.CondominioService;
 
 @RestController
 @RequestMapping("/api")
 public class AvisoController {
 
-
 	@Autowired
 	private AvisoService avisoService;
 	
+	@Autowired
+	private CondominioService condominioService;
 
 
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/avisos")
-	public ResponseEntity<Aviso> cadastrar(@RequestBody Aviso aviso) {
-		this.avisoService.save(aviso);
+	@PostMapping("/condominios/{id_condominio}/avisos")
+	public ResponseEntity<Aviso> cadastrar(@PathVariable ("id_condominio") Long id, @Valid @RequestBody Aviso aviso) {
+		return this.condominioService.getById(id).map(condominio -> {
+            aviso.setCondominioAviso(condominio);
+            avisoService.save(aviso);
+            return ResponseEntity.ok(aviso);
+        }).orElseThrow(() -> new NotFoundException("Erro ao salvar Unidade"));
 		
-		return new ResponseEntity<Aviso>(aviso, HttpStatus.CREATED);
+		
 	}
 	
 	
@@ -76,7 +85,6 @@ public class AvisoController {
 		 return avisoService.getById(id)
 		           .map(record -> {
 		               record.setDescricaoAviso(aviso.getDescricaoAviso());
-		               record.setCondominioAviso(aviso.getCondominioAviso());
 		               Aviso updated = avisoService.save(record);
 		               return ResponseEntity.ok().body(updated);
 		           }).orElse(ResponseEntity.notFound().build());
@@ -85,4 +93,3 @@ public class AvisoController {
 		
 	
 }
-
