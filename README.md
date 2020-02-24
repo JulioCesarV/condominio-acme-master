@@ -23,7 +23,11 @@ Sabendo que o ID do condomínio é 1.
 
 
 Para editar ou deletar Unidades, Avisos, ou Multas, usar:
+
 http://localhost:8081/api/unidades/{#}
+
 http://localhost:8081/api/avisos/{#}
+
 http://localhost:8081/api/multas/{#}
+
 Onde o "#", seria o ID passado por parâmetro.
